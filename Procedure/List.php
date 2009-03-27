@@ -35,7 +35,8 @@ abstract class Mapper_Procedure_List extends Mapper_Procedure
     /**
      * Invoke the procedure.
      *
-     * @return mixed    Aggregate or array of elements (if the function returns a single array).
+     * @return mixed    Aggregate or array of elements (if the 
+     *                  function returns a single array).
      */
     public function invoke()
     {
@@ -45,18 +46,34 @@ abstract class Mapper_Procedure_List extends Mapper_Procedure
     		foreach ($this->_cacheTags as $tag) {
     			$slot->addTag($tag);
     		}
-    		$result = $slot->load(); // returns false on fail
+    		$cached = $slot->load(); // returns false on fail
     	} else {
-            $result = false;
+            $cached = false;
     	}
-    	if (false === $result) {
+    	// Variable $cached always contain array('a'|'s', $data)
+    	// where 'a' means that $data is Aggregate, and 's' means
+    	// that it contains anything else (e.g. scalar).
+    	if (!is_array($cached)) {
             $result = call_user_func_array(array('parent', 'invoke'), $args);
             if ($result instanceof Mapper_Aggregate) {
                 $result->setIdColumnName($this->getIdColumnName());
             }
-    	}
-    	if ($slot) {
-    		$slot->save($result);
+	    	if ($slot) {
+	    		if ($result instanceof Mapper_Aggregate) {
+	    			$cached = array('a', $result->getArrayCopy());
+	    		} else {
+	    			$cached = array('s', $result);
+	    		}
+	    		$slot->save($cached);
+	    	}
+    	} else {
+    		if ($cached[0] === 'a') {
+    			// Fully restore the Aggregate.
+    			$result = new Mapper_Aggregate($cached[1], $this->getContext());
+    			$result->setIdColumnName($this->getIdColumnName());
+    		} else {
+    			$result = $cached[1];
+    		} 
     	}
         return $result;
     }    

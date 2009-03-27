@@ -148,11 +148,13 @@ class Mapper_Aggregate extends ArrayObject
     {
     	$tmpProp = "__tmp_prop";
     	$result = $this->fillParent($func, $colName, $args, $tmpProp);
-    	foreach ($this as $row) { 
-    		foreach ($row->$tmpProp as $k => $v) {
-    			if (!property_exists($row, $k)) {
-    				$row->$k = $v;
-    			}
+    	foreach ($this as $row) {
+    		if ($row->$tmpProp !== null) { 
+	    		foreach ($row->$tmpProp as $k => $v) {
+	    			if (!property_exists($row, $k)) {
+	    				$row->$k = $v;
+	    			}
+	    		}
     		}
     		unset($row->$tmpProp);
     	}
