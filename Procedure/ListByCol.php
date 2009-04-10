@@ -32,9 +32,23 @@ abstract class Mapper_Procedure_ListByCol extends Mapper_Procedure_List
         return key($in);
     }
 
+    /**
+     * Execute the procedure.
+     *
+     * @param array $ids  You may pass a scalar value here too, it will be 
+     *                    converted to array with a single element. Note that
+     *                    if you pass null, it will be treated as array(null)!
+     * @param $args
+     * @return Mapper_Aggregate
+     */
     public function invoke($ids, $args = array())
     {
-        $args[$this->getColumnNameListBy()] = (array) $ids;
-        return parent::invoke($args);
+        $ids = $ids !== null ? (array)$ids : array(null);
+        if (count($ids)) {
+            $args[$this->getColumnNameListBy()] = $ids;
+            return parent::invoke($args);
+        } else {
+            return new Mapper_Aggregate(array(), $this->getContext());
+        }
     }
 }
