@@ -91,7 +91,7 @@ abstract class Mapper_Context
 
     /**
      * Returns the procedure or class object by its name specified.
-     * Throws Mapper_Exception or PHP_Autoload_Exception,
+     * Throws Mapper_Exception or Exception.
      *
      * @param string $name
      * @return Mapper_Procedure or Mapper_Context_Class

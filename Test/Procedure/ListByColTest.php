@@ -21,6 +21,30 @@ class Mapper_Test_Procedure_ListByColTest extends PHPUnit_Framework_TestCase
     	   )));
         $this->_contextMock->listbycoltestobj_list_by_id(array(1, 2, 3));
     }    
+
+    public function testInvokeWithScalar()
+    {
+    	$this->_contextMock
+    	   ->expects($this->once())
+    	   ->method('invokeNativeProc')
+    	   ->with('listbycoltestobj_list_by_id', array('{"10"}'), false)
+    	   ->will($this->returnValue(array(
+    	       (object)array('id' => 10, 'name' => 'aa'),
+    	   )));
+        $this->_contextMock->listbycoltestobj_list_by_id(10);
+    }    
+
+    public function testInvokeWithNull()
+    {
+    	$this->_contextMock
+    	   ->expects($this->once())
+    	   ->method('invokeNativeProc')
+    	   ->with('listbycoltestobj_list_by_id', array('{NULL}'), false)
+    	   ->will($this->returnValue(array(
+    	       (object)array('id' => 10, 'name' => 'aa'),
+    	   )));
+        $this->_contextMock->listbycoltestobj_list_by_id(null);
+    }    
 }
 
 

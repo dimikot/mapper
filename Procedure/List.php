@@ -69,7 +69,10 @@ abstract class Mapper_Procedure_List extends Mapper_Procedure
     	} else {
     		if ($cached[0] === 'a') {
     			// Fully restore the Aggregate.
-    			$result = new Mapper_Aggregate($cached[1], $this->getContext());
+    			$result = new Mapper_Aggregate(array(), $this->getContext());
+    			foreach ($cached[1] as $item) {
+    			    $result->append($item);
+    			}
     			$result->setIdColumnName($this->getIdColumnName());
     		} else {
     			$result = $cached[1];

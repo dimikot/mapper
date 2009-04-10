@@ -42,21 +42,18 @@ class Mapper_Factory_Autoload extends Mapper_Factory
                 str_replace('/', '_', $parentName) . '_'
             )
         ) {
-        	$name = substr($name, strlen($parentName) + 1);
+            $name = substr($name, strlen($parentName) + 1);
         }
-        $fileName = str_replace('_', '/', $clsPrefix)
-            . "/"
-            . ($parentName ? $parentName . "/" : "")
-            . $name
-            . ".php";
-
-        try {
-            PHP_Autoload::loadFile($fileName);
-        } catch (PHP_Autoload_Exception $e) {
-            $e; // to remove Zend Studio notice of unused variable
-        }
-        if (!class_exists($className)) {
-            throw new PHP_Autoload_Exception("Cannot find the class \"{$className}\" after loading \"{$fileName}\"");
+        if (!class_exists($className, false)) {
+            $fileName = str_replace('_', '/', $clsPrefix)
+                . "/"
+                . ($parentName ? $parentName . "/" : "")
+                . $name
+                . ".php";
+            require_once($fileName);
+            if (!class_exists($className, false)) {
+                throw new Exception("Cannot find the class \"{$className}\" after loading \"{$fileName}\"");
+            }
         }
 
         return new $className($context, $origName);
