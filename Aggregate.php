@@ -48,8 +48,8 @@ class Mapper_Aggregate extends ArrayObject
      *
      * $db = DB::getAutoContext();
      * $topics = $db->topic_search(...);
-     * $persons = $topics->loadParent($db->person_list_by_id, 'creator_id');
-     * $cities = $persons->loadParent($db->city_list_by_id, 'city_id');
+     * $persons = $topics->fillParent($db->person_list_by_id, 'creator_id');
+     * $cities = $persons->fillParent($db->city_list_by_id, 'city_id');
      *
      * - loads topics matched by a query
      * - for each of them - loads its creator using person_list_by_id
