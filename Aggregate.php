@@ -72,13 +72,14 @@ class Mapper_Aggregate extends ArrayObject
     	$objsByValues = array();
 
     	foreach ($this as $targetObj) {
-        	$targetObj->$targetProp = null;
-
         	if ($targetObj->$colName === null) {
+                $targetObj->$targetProp = null;
         		continue;
         	}
 
             $objsByValues[$targetObj->$colName][] = $targetObj;
+
+            $targetObj->$targetProp = null;
         }
 
         $rows = $func->invoke(array_keys($objsByValues), $args);
