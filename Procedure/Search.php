@@ -33,18 +33,13 @@ abstract class Mapper_Procedure_Search extends Mapper_Procedure_List
      */
     public function invoke($args, Mapper_Pager $pager)
     {
-        // Fetch the skeleton.
-        $procSkel = new Mapper_Procedure_ListCustom(
-            $this->_getContext(),
-            $this->_getSkelName(),
-            $this->getInParams(),
-            new DB_Pgsql_Type_Array(new DB_Pgsql_Type_String()),
-            $this->createSlot(array($args, $pager->getLimit()))
-        );
-        $args[$this->getLimitColumnName()] = $pager->getLimit();
-        $skel = $procSkel->invoke($args);
+        $skel = $this->fetchSkel($args, $pager->getLimit());
         $pager->setTotal(count($skel));
         
+        if (!count($skel)) {
+            return new Mapper_Aggregate(array(), $this->_getContext());
+        }
+
         // Limit the skeleton.
         $limitedSkel = array_slice($skel, $pager->getOffset(), $pager->getPageSize());
         
@@ -59,6 +54,26 @@ abstract class Mapper_Procedure_Search extends Mapper_Procedure_List
         return $procData->invoke(array('skel' => $limitedSkel));
     }
     
+    public function count($args, $limit)
+    {
+        $skel = $this->fetchSkel($args, $limit);
+        return count($skel);
+    }
+
+    private  function fetchSkel($args, $limit)
+    {
+        // Fetch the skeleton.
+        $procSkel = new Mapper_Procedure_ListCustom(
+            $this->_getContext(),
+            $this->_getSkelName(),
+            $this->getInParams(),
+            new DB_Pgsql_Type_Array(new DB_Pgsql_Type_String()),
+            $this->createSlot(array($args, $limit))
+        );
+        $args[$this->getLimitColumnName()] = $limit;
+        $skel = $procSkel->invoke($args);
+        return $skel;
+    }
     
     //
     // Internal methods & overrides.

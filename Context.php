@@ -98,10 +98,12 @@ abstract class Mapper_Context
      */
     private function _getByName($name)
     {
-        if (!isset($this->_objects[$name])) {
-        	$this->_objects[$name] = $this->getFactory()->create($this, $name);
+        $key = join("|", array($name, $this->getParamListClass()));
+
+        if (!isset($this->_objects[$key])) {
+            $this->_objects[$key] = $this->getFactory()->create($this, $name);
         }
-        return $this->_objects[$name];
+        return $this->_objects[$key];
     }
 }
 
